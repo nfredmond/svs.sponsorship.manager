@@ -88,28 +88,28 @@ export default async function SponsorsPage() {
                 <TableBody>
                   {sponsors.map((sponsor) => (
                     <TableRow key={sponsor.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium text-gray-900">
                         {sponsor.organization_name}
                       </TableCell>
-                      <TableCell>{sponsor.contact_person_name || '-'}</TableCell>
+                      <TableCell className="text-gray-700">{sponsor.contact_person_name || '-'}</TableCell>
                       <TableCell>
                         {sponsor.contact_email ? (
                           <div className="flex items-center gap-1">
-                            <Mail className="h-3 w-3 text-gray-400" />
-                            <span className="text-sm">{sponsor.contact_email}</span>
+                            <Mail className="h-3 w-3 text-gray-500" />
+                            <span className="text-sm text-gray-700">{sponsor.contact_email}</span>
                           </div>
                         ) : (
-                          '-'
+                          <span className="text-gray-500">-</span>
                         )}
                       </TableCell>
                       <TableCell>
                         {sponsor.contact_phone ? (
                           <div className="flex items-center gap-1">
-                            <Phone className="h-3 w-3 text-gray-400" />
-                            <span className="text-sm">{sponsor.contact_phone}</span>
+                            <Phone className="h-3 w-3 text-gray-500" />
+                            <span className="text-sm text-gray-700">{sponsor.contact_phone}</span>
                           </div>
                         ) : (
-                          '-'
+                          <span className="text-gray-500">-</span>
                         )}
                       </TableCell>
                       <TableCell>

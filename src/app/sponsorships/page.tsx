@@ -130,17 +130,17 @@ export default async function SponsorshipsPage() {
                 <TableBody>
                   {sponsorships.map((sponsorship) => (
                     <TableRow key={sponsorship.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium text-gray-900">
                         {sponsorship.sponsor?.organization_name}
                       </TableCell>
-                      <TableCell>{sponsorship.tier?.tier_name || '-'}</TableCell>
+                      <TableCell className="text-gray-700">{sponsorship.tier?.tier_name || '-'}</TableCell>
                       <TableCell>
                         <Badge variant="outline">{sponsorship.sponsorship_type}</Badge>
                       </TableCell>
-                      <TableCell className="font-semibold">
+                      <TableCell className="font-semibold text-gray-900">
                         {formatCurrency(sponsorship.total_value)}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-gray-700">
                         {sponsorship.payment_date
                           ? formatDateShort(sponsorship.payment_date)
                           : '-'}
