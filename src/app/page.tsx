@@ -90,8 +90,8 @@ export default async function DashboardPage() {
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               Fiscal Year {data.currentFY} Overview
             </p>
           </div>
@@ -122,15 +122,15 @@ export default async function DashboardPage() {
                 <p className="text-3xl font-bold text-svs-gold">
                   {formatCurrency(data.grandTotal)}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   of {formatCurrency(data.fiscalYearGoal)} goal
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                   {data.progressPercent.toFixed(1)}%
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {formatCurrency(data.fiscalYearGoal - data.grandTotal)} remaining
                 </p>
               </div>
@@ -182,25 +182,25 @@ export default async function DashboardPage() {
                       className="flex items-center justify-between p-3 border rounded-lg"
                     >
                       <div>
-                        <p className="font-medium text-sm">
+                        <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
                           {transaction.sponsor?.organization_name}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
                           {transaction.tier?.tier_name}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-sm">
+                        <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">
                           {formatCurrency(transaction.total_value)}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
                           {formatDateShort(transaction.payment_date)}
                         </p>
                       </div>
                     </div>
                   ))
-                ) : (
-                  <p className="text-center text-gray-500 py-8">
+                  ) : (
+                  <p className="text-center text-gray-600 dark:text-gray-400 py-8">
                     No transactions yet
                   </p>
                 )}
@@ -215,26 +215,26 @@ export default async function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center justify-between p-4 border dark:border-gray-700 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                      <Target className="h-5 w-5 text-yellow-600" />
+                    <div className="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                      <Target className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
                     </div>
                     <div>
-                      <p className="font-medium">Pending Payments</p>
-                      <p className="text-sm text-gray-500">Awaiting receipt</p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">Pending Payments</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Awaiting receipt</p>
                     </div>
                   </div>
                   <Badge variant="secondary">{data.pending}</Badge>
                 </div>
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center justify-between p-4 border dark:border-gray-700 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                      <Target className="h-5 w-5 text-red-600" />
+                    <div className="h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                      <Target className="h-5 w-5 text-red-600 dark:text-red-500" />
                     </div>
                     <div>
-                      <p className="font-medium">Overdue Items</p>
-                      <p className="text-sm text-gray-500">Requires attention</p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">Overdue Items</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Requires attention</p>
                     </div>
                   </div>
                   <Badge variant="destructive">{data.overdue}</Badge>
@@ -251,9 +251,9 @@ export default async function DashboardPage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {Object.entries(data.tierCounts || {}).map(([tier, count]) => (
-                  <div key={tier} className="text-center p-4 border rounded-lg">
+                  <div key={tier} className="text-center p-4 border dark:border-gray-700 rounded-lg">
                     <p className="text-2xl font-bold text-svs-gold">{count as number}</p>
-                    <p className="text-sm text-gray-600 mt-1">{tier}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">{tier}</p>
                   </div>
                 ))}
               </div>

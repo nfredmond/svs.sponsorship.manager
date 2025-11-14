@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Search, User, Settings, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 interface HeaderProps {
   user?: {
@@ -33,11 +34,11 @@ export function Header({ user }: HeaderProps) {
     .toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'
 
   return (
-    <header className="h-16 border-b bg-white flex items-center justify-between px-6">
+    <header className="h-16 border-b bg-white dark:bg-gray-950 dark:border-gray-800 flex items-center justify-between px-6">
       {/* Search */}
       <div className="flex-1 max-w-xl">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
           <Input
             placeholder="Search sponsors, sponsorships..."
             className="pl-10"
@@ -45,8 +46,10 @@ export function Header({ user }: HeaderProps) {
         </div>
       </div>
 
-      {/* User Menu */}
-      <DropdownMenu>
+      {/* Theme Toggle & User Menu */}
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar>
@@ -86,6 +89,7 @@ export function Header({ user }: HeaderProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      </div>
     </header>
   )
 }

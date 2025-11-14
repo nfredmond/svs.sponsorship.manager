@@ -72,9 +72,9 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="flex h-full w-64 flex-col bg-white border-r">
+    <div className="flex h-full w-64 flex-col bg-white dark:bg-gray-950 border-r dark:border-gray-800">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 px-6 border-b">
+      <div className="flex h-16 items-center gap-3 px-6 border-b dark:border-gray-800">
         <Image
           src="/logo.jpg"
           alt="SVS APA"
@@ -83,8 +83,8 @@ export function Sidebar() {
           className="rounded"
         />
         <div className="flex flex-col">
-          <span className="font-semibold text-sm">SVS APA</span>
-          <span className="text-xs text-muted-foreground">Sponsorship Tracker</span>
+          <span className="font-semibold text-sm dark:text-gray-100">SVS APA</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">Sponsorship Tracker</span>
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export function Sidebar() {
           if (item.children) {
             return (
               <div key={item.name} className="space-y-1">
-                <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700">
+                <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   <item.icon className="h-4 w-4" />
                   {item.name}
                 </div>
@@ -108,8 +108,8 @@ export function Sidebar() {
                         className={cn(
                           'flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors',
                           isActive
-                            ? 'bg-svs-gold/10 text-svs-brown font-medium'
-                            : 'text-gray-600 hover:bg-gray-100'
+                            ? 'bg-svs-gold/10 text-svs-brown dark:text-svs-gold font-medium'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                         )}
                       >
                         <child.icon className="h-4 w-4" />
@@ -130,8 +130,8 @@ export function Sidebar() {
               className={cn(
                 'flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors',
                 isActive
-                  ? 'bg-svs-gold/10 text-svs-brown font-medium'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-svs-gold/10 text-svs-brown dark:text-svs-gold font-medium'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
               )}
             >
               <item.icon className="h-4 w-4" />
@@ -142,7 +142,7 @@ export function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t">
+      <div className="p-4 border-t dark:border-gray-800">
         <form action="/auth/logout" method="POST">
           <Button
             type="submit"
