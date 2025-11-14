@@ -64,7 +64,7 @@ OR simply push a new commit to GitHub and it will trigger a new deployment autom
 
 1. **Create Admin User**
    - Access: https://ssjlyksagkzmchjvvtao.supabase.co/project/ssjlyksagkzmchjvvtao/auth/users
-   - Create a user account for Nathaniel Redmond (nathaniel@greendottransportation.com)
+   - Create a user account for Nathaniel Redmond (nathaniel@natfordplanning.com)
 
 2. **Test the Application**
    - Login at: https://svs-sponsorship-manager-natford.vercel.app/login
@@ -100,7 +100,7 @@ The following data has been imported:
 
 For issues or questions:
 - **Contact**: Nathaniel Redmond
-- **Email**: nathaniel@greendottransportation.com
+- **Email**: nathaniel@natfordplanning.com
 - **Phone**: (530) 492-9775
 
 ## 🚀 Deployment URLs
