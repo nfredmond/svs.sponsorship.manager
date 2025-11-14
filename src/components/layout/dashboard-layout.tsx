@@ -7,7 +7,7 @@ export async function DashboardLayout({ children }: { children: React.ReactNode 
   const { data: { user } } = await supabase.auth.getUser()
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-white dark:bg-gray-950">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header user={user} />
