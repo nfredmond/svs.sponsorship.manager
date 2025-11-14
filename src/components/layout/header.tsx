@@ -34,7 +34,7 @@ export function Header({ user }: HeaderProps) {
     .toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || 'U'
 
   return (
-    <header className="h-16 border-b bg-white dark:bg-gray-950 dark:border-gray-800 flex items-center justify-between px-6">
+    <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex items-center justify-between px-6">
       {/* Search */}
       <div className="flex-1 max-w-xl">
         <div className="relative">

@@ -72,9 +72,9 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="flex h-full w-64 flex-col bg-white dark:bg-gray-950 border-r dark:border-gray-800">
+    <div className="flex h-full w-64 flex-col bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 px-6 border-b dark:border-gray-800">
+      <div className="flex h-16 items-center gap-3 px-6 border-b border-gray-200 dark:border-gray-800">
         <Image
           src="/logo.jpg"
           alt="SVS APA"
@@ -83,8 +83,8 @@ export function Sidebar() {
           className="rounded"
         />
         <div className="flex flex-col">
-          <span className="font-semibold text-sm dark:text-gray-100">SVS APA</span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">Sponsorship Tracker</span>
+          <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">SVS APA</span>
+          <span className="text-xs text-gray-600 dark:text-gray-400">Sponsorship Tracker</span>
         </div>
       </div>
 
@@ -142,12 +142,12 @@ export function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t dark:border-gray-800">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-800">
         <form action="/auth/logout" method="POST">
           <Button
             type="submit"
             variant="ghost"
-            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+            className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
           >
             <LogOut className="mr-2 h-4 w-4" />
             Logout
