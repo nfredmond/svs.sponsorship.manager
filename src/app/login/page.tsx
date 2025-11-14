@@ -97,6 +97,11 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
+          <div className="mt-4 text-center">
+            <p className="text-xs text-gray-500">
+              Admin access only. Contact the sponsorship chair for access.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
