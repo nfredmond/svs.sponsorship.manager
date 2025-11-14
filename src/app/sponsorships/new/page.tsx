@@ -13,7 +13,8 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { getCurrentFiscalYear } from '@/lib/utils'
+import { getCurrentFiscalYear } from '@/lib/fiscal-year'
+import { calculateRenewalDate } from '@/lib/fiscal-year'
 
 export default function NewSponsorshipPage() {
   const router = useRouter()
@@ -21,6 +22,7 @@ export default function NewSponsorshipPage() {
   const [loading, setLoading] = useState(false)
   const [sponsors, setSponsors] = useState<any[]>([])
   const [tiers, setTiers] = useState<any[]>([])
+  const [renewalDate, setRenewalDate] = useState<string>('')
   const [formData, setFormData] = useState({
     sponsor_id: '',
     sponsorship_tier_id: '',
@@ -37,6 +39,14 @@ export default function NewSponsorshipPage() {
     scot_mende_amount: '',
     notes: '',
   })
+
+  // Calculate renewal date when payment date changes
+  useEffect(() => {
+    if (formData.payment_date) {
+      const renewal = calculateRenewalDate(formData.payment_date)
+      setRenewalDate(renewal.toISOString().split('T')[0])
+    }
+  }, [formData.payment_date])
 
   useEffect(() => {
     fetchSponsorsAndTiers()
@@ -69,6 +79,7 @@ export default function NewSponsorshipPage() {
         monetary_amount: formData.monetary_amount ? parseFloat(formData.monetary_amount) : 0,
         in_kind_value: formData.in_kind_value ? parseFloat(formData.in_kind_value) : 0,
         scot_mende_amount: formData.scot_mende_amount ? parseFloat(formData.scot_mende_amount) : 0,
+        renewal_date: renewalDate || null,
       }
 
       const { error } = await supabase.from('sponsorships').insert([data])
@@ -231,6 +242,16 @@ export default function NewSponsorshipPage() {
                       setFormData({ ...formData, payment_date: e.target.value })
                     }
                   />
+                  {renewalDate && (
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      Renewal Date: {new Date(renewalDate).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                      <span className="ml-1 text-gray-500">(Payment date + 1 year, end of month)</span>
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">

@@ -1,38 +1,32 @@
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
-import { StatCard } from '@/components/dashboard/stat-card'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
-import { formatCurrency, formatDateShort, getCurrentFiscalYear } from '@/lib/utils'
-import {
-  DollarSign,
-  TrendingUp,
-  Users,
-  Heart,
-  Target,
-  Plus,
-  FileText,
-} from 'lucide-react'
-import Link from 'next/link'
+import { getCurrentFiscalYear } from '@/lib/fiscal-year'
+import { DashboardClient } from './page-client'
 
-async function getDashboardData() {
+async function getDashboardData(fiscalYear: string) {
   const supabase = await createClient()
-  const currentFY = getCurrentFiscalYear()
 
-  // Get sponsorships for current fiscal year
+  // Get fiscal year settings
+  const { data: fySettings } = await supabase
+    .from('fiscal_year_settings')
+    .select('*')
+    .eq('fiscal_year', fiscalYear)
+    .single()
+
+  const fiscalYearGoal = fySettings?.goal_amount || 11500
+
+  // Get sponsorships for selected fiscal year
   const { data: sponsorships } = await supabase
     .from('sponsorships')
     .select('*, sponsor:sponsors(*), tier:sponsorship_tiers(*)')
-    .eq('fiscal_year', currentFY)
+    .eq('fiscal_year', fiscalYear)
 
-  // Get individual donations for current fiscal year
+  // Get individual donations for selected fiscal year
   const { data: donations } = await supabase
     .from('individual_donations')
     .select('*')
-    .gte('donation_date', `${currentFY.split('/')[0]}-07-01`)
-    .lte('donation_date', `${currentFY.split('/')[1]}-06-30`)
+    .gte('donation_date', `${fiscalYear.split('/')[0]}-07-01`)
+    .lte('donation_date', `${fiscalYear.split('/')[1]}-06-30`)
 
   // Calculate metrics
   const totalMonetary = sponsorships?.reduce((sum, s) => sum + Number(s.monetary_amount), 0) || 0
@@ -41,7 +35,6 @@ async function getDashboardData() {
   const scotMendeFund = sponsorships?.reduce((sum, s) => sum + Number(s.scot_mende_amount), 0) || 0
   const grandTotal = totalMonetary + totalInKind + totalDonations
 
-  const fiscalYearGoal = 11500
   const progressPercent = (grandTotal / fiscalYearGoal) * 100
 
   // Get active sponsors count
@@ -77,190 +70,22 @@ async function getDashboardData() {
     pending,
     overdue,
     tierCounts,
-    currentFY,
   }
 }
 
-export default async function DashboardPage() {
-  const data = await getDashboardData()
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ fy?: string }>
+}) {
+  const params = await searchParams
+  const currentFY = getCurrentFiscalYear()
+  const selectedFY = params.fy || currentFY
+  const data = await getDashboardData(selectedFY)
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        {/* Page Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Fiscal Year {data.currentFY} Overview
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Link href="/sponsorships/new">
-              <Button className="bg-svs-gold hover:bg-svs-gold/90">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Sponsorship
-              </Button>
-            </Link>
-            <Link href="/reports/fiscal-year">
-              <Button variant="outline">
-                <FileText className="mr-2 h-4 w-4" />
-                View Reports
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Fiscal Year Goal Progress */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Fiscal Year Goal Progress</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-3xl font-bold text-svs-gold">
-                  {formatCurrency(data.grandTotal)}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  of {formatCurrency(data.fiscalYearGoal)} goal
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {data.progressPercent.toFixed(1)}%
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {formatCurrency(data.fiscalYearGoal - data.grandTotal)} remaining
-                </p>
-              </div>
-            </div>
-            <Progress value={data.progressPercent} className="h-3" />
-          </CardContent>
-        </Card>
-
-        {/* Key Metrics */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard
-            title="Total Monetary"
-            value={formatCurrency(data.totalMonetary)}
-            icon={DollarSign}
-            description={`${data.currentFY}`}
-          />
-          <StatCard
-            title="Total In-Kind"
-            value={formatCurrency(data.totalInKind)}
-            icon={TrendingUp}
-            description="Services & goods donated"
-          />
-          <StatCard
-            title="Active Sponsors"
-            value={data.uniqueSponsors}
-            icon={Users}
-            description="Unique organizations"
-          />
-          <StatCard
-            title="Scot Mende Fund"
-            value={formatCurrency(data.scotMendeFund)}
-            icon={Heart}
-            description="Mentorship program support"
-          />
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Recent Transactions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {data.recentTransactions.length > 0 ? (
-                  data.recentTransactions.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div>
-                        <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
-                          {transaction.sponsor?.organization_name}
-                        </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {transaction.tier?.tier_name}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">
-                          {formatCurrency(transaction.total_value)}
-                        </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {formatDateShort(transaction.payment_date)}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                  ) : (
-                  <p className="text-center text-gray-600 dark:text-gray-400 py-8">
-                    No transactions yet
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Outstanding Items */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Outstanding Items</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border dark:border-gray-700 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
-                      <Target className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-gray-100">Pending Payments</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Awaiting receipt</p>
-                    </div>
-                  </div>
-                  <Badge variant="secondary">{data.pending}</Badge>
-                </div>
-                <div className="flex items-center justify-between p-4 border dark:border-gray-700 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                      <Target className="h-5 w-5 text-red-600 dark:text-red-500" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-gray-100">Overdue Items</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Requires attention</p>
-                    </div>
-                  </div>
-                  <Badge variant="destructive">{data.overdue}</Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Sponsors by Tier */}
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle>Sponsors by Tier</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.entries(data.tierCounts || {}).map(([tier, count]) => (
-                  <div key={tier} className="text-center p-4 border dark:border-gray-700 rounded-lg">
-                    <p className="text-2xl font-bold text-svs-gold">{count as number}</p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">{tier}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <DashboardClient dashboardData={data} currentFY={currentFY} />
     </DashboardLayout>
   )
 }
