@@ -24,6 +24,7 @@ import {
   Mail,
   Tag,
   RefreshCw,
+  Contact,
 } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -40,6 +41,7 @@ const navigation = [
       { name: 'Archived Sponsors', href: '/sponsors/archived', icon: Archive },
     ],
   },
+  { name: 'Contacts', href: '/contacts', icon: Contact },
   {
     name: 'Sponsorships',
     icon: DollarSign,
