@@ -453,14 +453,38 @@ FOR EACH ROW
 EXECUTE FUNCTION update_sponsor_status();
 
 -- Backfill sponsor statuses based on existing sponsorships
-DO $$
-DECLARE
-    sponsor_record RECORD;
-BEGIN
-    FOR sponsor_record IN SELECT id FROM sponsors LOOP
-        PERFORM update_sponsor_status() FROM sponsorships WHERE sponsor_id = sponsor_record.id LIMIT 1;
-    END LOOP;
-END $$;
+-- Update each sponsor's status based on their most recent sponsorship
+UPDATE sponsors s
+SET current_status = CASE
+    -- If no sponsorships exist, status is Prospect
+    WHEN NOT EXISTS (
+        SELECT 1 FROM sponsorships sp
+        WHERE sp.sponsor_id = s.id
+        AND sp.status = 'Received'
+    ) THEN 'Prospect'
+
+    -- If latest sponsorship has no expiration date, status is Pending
+    WHEN (
+        SELECT expiration_date FROM sponsorships sp
+        WHERE sp.sponsor_id = s.id
+        AND sp.status = 'Received'
+        ORDER BY sp.payment_date DESC NULLS LAST, sp.created_at DESC
+        LIMIT 1
+    ) IS NULL THEN 'Pending'
+
+    -- If expiration date is in the future, status is Active
+    WHEN (
+        SELECT expiration_date FROM sponsorships sp
+        WHERE sp.sponsor_id = s.id
+        AND sp.status = 'Received'
+        ORDER BY sp.payment_date DESC NULLS LAST, sp.created_at DESC
+        LIMIT 1
+    ) >= CURRENT_DATE THEN 'Active'
+
+    -- Otherwise, status is Lapsed
+    ELSE 'Lapsed'
+END
+WHERE s.status_override = FALSE;
 
 -- 18. MIGRATE EXISTING CONTACT DATA
 -- Move existing contact data from sponsors table to contacts table
