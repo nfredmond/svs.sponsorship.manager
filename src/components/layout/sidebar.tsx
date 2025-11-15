@@ -20,6 +20,9 @@ import {
   BarChart3,
   FileBarChart,
   FileSpreadsheet,
+  Calendar,
+  Mail,
+  Tag,
 } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -46,6 +49,7 @@ const navigation = [
       { name: 'Overdue Items', href: '/sponsorships/overdue', icon: FileCheck },
     ],
   },
+  { name: 'Events', href: '/events', icon: Calendar },
   {
     name: 'Individual Donations',
     icon: Heart,
@@ -65,7 +69,16 @@ const navigation = [
       { name: 'Custom Reports', href: '/reports/custom', icon: FileSpreadsheet },
     ],
   },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  {
+    name: 'Settings',
+    icon: Settings,
+    children: [
+      { name: 'General Settings', href: '/settings', icon: Settings },
+      { name: 'Fiscal Years', href: '/settings/fiscal-years', icon: Calendar },
+      { name: 'Email Templates', href: '/settings/email-templates', icon: Mail },
+      { name: 'Tags', href: '/settings/tags', icon: Tag },
+    ],
+  },
 ]
 
 export function Sidebar() {
