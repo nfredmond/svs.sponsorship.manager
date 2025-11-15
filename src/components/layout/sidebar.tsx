@@ -23,6 +23,7 @@ import {
   Calendar,
   Mail,
   Tag,
+  RefreshCw,
 } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -49,6 +50,7 @@ const navigation = [
       { name: 'Overdue Items', href: '/sponsorships/overdue', icon: FileCheck },
     ],
   },
+  { name: 'Renewal Pipeline', href: '/renewals', icon: RefreshCw },
   { name: 'Events', href: '/events', icon: Calendar },
   {
     name: 'Individual Donations',
