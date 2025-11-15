@@ -28,6 +28,47 @@ async function getDashboardData(fiscalYear: string) {
     .gte('donation_date', `${fiscalYear.split('/')[0]}-07-01`)
     .lte('donation_date', `${fiscalYear.split('/')[1]}-06-30`)
 
+  // Get expiring sponsors (using the view if it exists, otherwise query directly)
+  const today = new Date()
+  const in90Days = new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000)
+
+  const { data: expiringSponsorships } = await supabase
+    .from('sponsorships')
+    .select(`
+      *,
+      sponsor:sponsors(*),
+      tier:sponsorship_tiers(*)
+    `)
+    .eq('status', 'Received')
+    .not('expiration_date', 'is', null)
+    .gte('expiration_date', today.toISOString().split('T')[0])
+    .lte('expiration_date', in90Days.toISOString().split('T')[0])
+    .order('expiration_date', { ascending: true })
+    .limit(10)
+
+  // Get all active sponsors (current status = Active)
+  const { data: activeSponsors } = await supabase
+    .from('sponsors')
+    .select('id, current_status')
+    .eq('current_status', 'Active')
+
+  // Get lapsed sponsors
+  const { data: lapsedSponsors } = await supabase
+    .from('sponsors')
+    .select('id, current_status')
+    .eq('current_status', 'Lapsed')
+
+  // Get recent interactions (last 5)
+  const { data: recentInteractions } = await supabase
+    .from('sponsor_interactions')
+    .select(`
+      *,
+      sponsor:sponsors(organization_name),
+      contact:contacts(contact_name)
+    `)
+    .order('interaction_date', { ascending: false })
+    .limit(5)
+
   // Calculate metrics
   const totalMonetary = sponsorships?.reduce((sum, s) => sum + Number(s.monetary_amount), 0) || 0
   const totalInKind = sponsorships?.reduce((sum, s) => sum + Number(s.in_kind_value), 0) || 0
@@ -37,7 +78,7 @@ async function getDashboardData(fiscalYear: string) {
 
   const progressPercent = (grandTotal / fiscalYearGoal) * 100
 
-  // Get active sponsors count
+  // Get active sponsors count for this fiscal year
   const uniqueSponsors = new Set(sponsorships?.map(s => s.sponsor_id)).size
 
   // Get recent transactions (last 10)
@@ -70,6 +111,10 @@ async function getDashboardData(fiscalYear: string) {
     pending,
     overdue,
     tierCounts,
+    expiringSponsorships: expiringSponsorships || [],
+    activeSponsorCount: activeSponsors?.length || 0,
+    lapsedSponsorCount: lapsedSponsors?.length || 0,
+    recentInteractions: recentInteractions || [],
   }
 }
 
